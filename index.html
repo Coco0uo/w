@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>民族团结统计墙 · 中央民族大学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 16px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        .header p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .header .school {
+            color: #667eea;
+            font-weight: 500;
+            margin-top: 5px;
+            font-size: 11px;
+        }
+        
+        .input-area {
+            background: #f8f9ff;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            outline: none;
+            font-family: inherit;
+            background: white;
+        }
+        
+        .input-group input:focus {
+            border-color: #667eea;
+        }
+        
+        .input-group button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0 22px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .input-group button:active {
+            transform: scale(0.96);
+        }
+        
+        .tip {
+            font-size: 11px;
+            color: #999;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .stats-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats-title span {
+            background: #667eea;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .minzu-list {
+            margin-bottom: 16px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        
+        .minzu-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .minzu-name {
+            width: 85px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .progress-container {
+            flex: 1;
+            background: #f0f0f0;
+            border-radius: 20px;
+            height: 28px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-size: 11px;
+            font-weight: 500;
+            transition: width 0.3s ease;
+        }
+        
+        .minzu-count {
+            width: 45px;
+            text-align: right;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .total-count {
+            background: #f0f0f0;
+            border-radius: 14px;
+            padding: 10px 12px;
+            text-align: center;
+            margin: 12px 0;
+        }
+        
+        .total-count strong {
+            font-size: 24px;
+            color: #667eea;
+        }
+        
+        .message-box {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe8f0 100%);
+            border-radius: 18px;
+            padding: 16px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .message-box .quote-icon {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+        
+        .message-box .message-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .message-box .message-sub {
+            font-size: 11px;
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .share-btn {
+            background: #07C160;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .screenshot-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .reset-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 50px;
+            color: #999;
+            font-size: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+        }
+        
+        .reset-btn:active {
+            background: #f5f5f5;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 16px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .minzu-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .minzu-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .minzu-list::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>🏮 民族团结统计墙 🏮</h1>
+                <p>输入你的民族 · 共绘团结画卷</p>
+                <div class="school">中央民族大学 · 计算机4班 & 5班</div>
+            </div>
+            
+            <div class="input-area">
+                <div class="input-group">
+                    <input type="text" id="minzuInput" placeholder="输入你的民族（如：汉、藏、维吾尔、蒙古...）" autocomplete="off">
+                    <button id="submitBtn">✨ 加入</button>
+                </div>
+                <div class="tip">💡 每位同学提交一次，共同完成班级民族统计</div>
+            </div>
+            
+            <div id="statsArea">
+                <div class="stats-title">
+                    📊 民族分布统计
+                    <span>实时更新</span>
+                </div>
+                <div id="minzuListContainer" class="minzu-list">
+                    <div class="empty-state">✨ 等待同学们加入 ✨<br>输入你的民族，开始统计</div>
+                </div>
+                <div id="totalArea" class="total-count" style="display: none;">
+                    已参与人数：<strong id="totalCount">0</strong> 人
+                </div>
+            </div>
+            
+            <div id="messageArea" style="display: none;">
+                <div class="message-box">
+                    <div class="quote-icon">🏮</div>
+                    <div class="message-text" id="messageText">
+                        中华民族一家亲，同心共筑中国梦
+                    </div>
+                    <div class="message-sub">—— 像石榴籽一样紧紧抱在一起 ——</div>
+                </div>
+            </div>
+            
+            <div class="button-group" id="buttonGroup" style="display: none;">
+                <button class="share-btn" id="shareBtn">📱 分享给同学</button>
+                <button class="screenshot-btn" id="screenshotBtn">📸 保存截图</button>
+            </div>
+            
+            <button class="reset-btn" id="resetBtn">🔄 重置统计</button>
+        </div>
+        <div class="footer">
+            🇨🇳 铸牢中华民族共同体意识 · 美美与共，知行合一 🇨🇳
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // 存储民族统计数据的关键变量
+        let ethnicData = {};
+        
+        // 民族团结寄语库
+        const messages = [
+            "中华民族一家亲，同心共筑中国梦。",
+            "像石榴籽一样紧紧抱在一起，共同创造美好生活。",
+            "各美其美，美人之美，美美与共，天下大同。",
+            "民族团结是各族人民的生命线，也是国家长治久安的根基。",
+            "手足相亲，守望相助，共谱民族团结新篇章。",
+            "五十六个民族，五十六朵花，朵朵都向太阳开。",
+            "在中华民族大家庭中，各民族像石榴籽一样紧紧抱在一起。",
+            "铸牢中华民族共同体意识，共圆伟大复兴梦想。"
+        ];
+        
+        // 获取DOM元素
+        const minzuInput = document.getElementById('minzuInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const screenshotBtn = document.getElementById('screenshotBtn');
+        const minzuListContainer = document.getElementById('minzuListContainer');
+        const totalArea = document.getElementById('totalArea');
+        const totalCountElement = document.getElementById('totalCount');
+        const messageArea = document.getElementById('messageArea');
+        const buttonGroup = document.getElementById('buttonGroup');
+        const toast = document.getElementById('toast');
+        
+        // 显示提示消息
+        function showToast(msg, duration = 2000) {
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, duration);
+        }
+        
+        // 保存数据到localStorage
+        function saveData() {
+            try {
+                localStorage.setItem('ethnicData', JSON.stringify(ethnicData));
+                console.log('数据已保存:', ethnicData);
+            } catch (e) {
+                console.error('保存失败:', e);
+            }
+        }
+        
+        // 从localStorage加载数据
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('ethnicData');
+                if (saved) {
+                    ethnicData = JSON.parse(saved);
+                    console.log('数据已加载:', ethnicData);
+                } else {
+                    ethnicData = {};
+                    console.log('无历史数据，初始化空数据');
+                }
+            } catch (e) {
+                console.error('加载失败:', e);
+                ethnicData = {};
+            }
+        }
+        
+        // 计算总人数
+        function getTotalCount() {
+            let total = 0;
+            for (let minzu in ethnicData) {
+                total += ethnicData[minzu];
+            }
+            return total;
+        }
+        
+        // 获取最大人数（用于进度条比例）
+        function getMaxCount() {
+            let max = 0;
+            for (let minzu in ethnicData) {
+                if (ethnicData[minzu] > max) max = ethnicData[minzu];
+            }
+            return max;
+        }
+        
+        // 随机获取一条民族团结寄语
+        function getRandomMessage() {
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+        
+        // 更新界面显示
+        function updateUI() {
+            const total = getTotalCount();
+            const maxCount = getMaxCount();
+            
+            console.log('更新界面，当前数据:', ethnicData, '总人数:', total);
+            
+            // 更新总人数显示
+            if (total > 0) {
+                totalArea.style.display = 'block';
+                totalCountElement.textContent = total;
+                messageArea.style.display = 'block';
+                buttonGroup.style.display = 'flex';
+                document.getElementById('messageText').textContent = getRandomMessage();
+            } else {
+                totalArea.style.display = 'none';
+                messageArea.style.display = 'none';
+                buttonGroup.style.display = 'none';
+            }
+            
+            // 获取所有民族并排序
+            const minzuList = Object.keys(ethnicData).sort();
+            
+            if (minzuList.length === 0) {
+                minzuListContainer.innerHTML = '<div class="empty-state">✨ 等待同学们加入 ✨<br>输入你的民族，开始统计</div>';
+                return;
+            }
+            
+            // 渲染民族列表
+            let html = '';
+            for (let i = 0; i < minzuList.length; i++) {
+                const minzu = minzuList[i];
+                const count = ethnicData[minzu];
+                const percent = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                const barWidth = Math.max(percent, 8);
+                
+                html += `
+                    <div class="minzu-item">
+                        <div class="minzu-name">🏷️ ${minzu}族</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${barWidth}%;">
+                                ${percent > 20 ? count + '人' : ''}
+                            </div>
+                        </div>
+                        <div class="minzu-count">${count}人</div>
+                    </div>
+                `;
+            }
+            
+            minzuListContainer.innerHTML = html;
+        }
+        
+        // 标准化民族名称
+        function normalizeEthnic(name) {
+            const map = {
+                '汉': '汉',
+                '藏': '藏',
+                '维': '维吾尔',
+                '维吾尔': '维吾尔',
+                '蒙': '蒙古',
+                '蒙古': '蒙古',
+                '壮': '壮',
+                '回': '回',
+                '苗': '苗',
+                '彝': '彝',
+                '满': '满',
+                '朝鲜': '朝鲜',
+                '朝鲜族': '朝鲜',
+                '土家': '土家',
+                '土家族': '土家'
+            };
+            const trimmed = name.trim();
+            return map[trimmed] || trimmed;
+        }
+        
+        // 添加民族数据
+        function addEthnic(minzuName) {
+            if (!minzuName || minzuName.trim() === '') {
+                showToast('请输入民族名称～');
+                return false;
+            }
+            
+            const normalized = normalizeEthnic(minzuName);
+            
+            if (ethnicData[normalized]) {
+                ethnicData[normalized]++;
+            } else {
+                ethnicData[normalized] = 1;
+            }
+            
+            console.log('添加成功:', normalized, '当前数量:', ethnicData[normalized]);
+            
+            saveData();
+            updateUI();
+            showToast(`✅ 成功加入 ${normalized}族！当前共${getTotalCount()}人参与`);
+            return true;
+        }
+        
+        // 重置所有数据
+        function resetData() {
+            if (confirm('确定要重置所有统计吗？数据将无法恢复。')) {
+                ethnicData = {};
+                saveData();
+                updateUI();
+                showToast('已重置统计');
+            }
+        }
+        
+        // 分享功能
+        function shareToFriends() {
+            const total = getTotalCount();
+            const message = `【民族团结统计墙】\n我刚刚参与了民族团结统计！目前已有${total}位同学参与，快来一起加入吧~\n🇨🇳 中华民族一家亲，同心共筑中国梦`;
+            
+            const url = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '民族团结统计墙',
+                    text: message,
+                    url: url
+                }).catch(() => {
+                    copyToClipboard(message + '\n' + url);
+                });
+            } else {
+                copyToClipboard(message + '\n' + url);
+            }
+        }
+        
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast('📋 链接已复制，可分享到班级群');
+        }
+        
+        // 截图提示
+        function takeScreenshot() {
+            showToast('📸 请使用手机自带的截图功能保存（电源键+音量键）');
+        }
+        
+        // 提交事件处理
+        function handleSubmit() {
+            const minzuValue = minzuInput.value.trim();
+            if (addEthnic(minzuValue)) {
+                minzuInput.value = '';
+                minzuInput.focus();
+            }
+        }
+        
+        // 初始化应用
+        function init() {
+            loadData();
+            updateUI();
+            
+            submitBtn.addEventListener('click', handleSubmit);
+            resetBtn.addEventListener('click', resetData);
+            shareBtn.addEventListener('click', shareToFriends);
+            screenshotBtn.addEventListener('click', takeScreenshot);
+            
+            minzuInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleSubmit();
+                }
+            });
+            
+            console.log('应用初始化完成');
+        }
+        
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>
